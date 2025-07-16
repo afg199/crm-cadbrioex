@@ -1,0 +1,111 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+{% block title %}Crud con Python 🐍 | Registrar Equipo{% endblock %}
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">REGISTRAR NUEVO SERVICIO</h3>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+      <form
+        class="form-horizontal mx-auto"
+        method="POST"
+        action="/form-registrar-servicio"
+        autocomplete="off"
+        enctype="multipart/form-data">
+        <!--Guardo el id_equipo al que pertenece el servicio-->
+        <input type="hidden" 
+        name="id_equipo" 
+        value="{{ id_equipo }}">
+        <!---->
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="tipo_servicio" class="form-label">
+                TIPO DE SERVICIO
+              </label>
+              <select
+                class="form-select"
+                name="tipo_servicio"
+                aria-label="Default select example">
+                <option selected>Seleccione</option>
+                <option value="1">PUESTA EN MARCHA</option>
+                <option value="2">LIMPIEZA</option>
+                <option value="3">REPARACIÓN</option>
+                <option value="4">OTRO SERVICIO</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="trabajador_servicio" class="form-label">
+                Trabajador que realiza el servicio
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="trabajador_servicio"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="horas_servicio" class="form-label">
+                Horas en realizar el servicio
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="horas_servicio"
+                required />
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="fecha_equipo" class="form-label">
+                Fecha de servicio
+              </label>
+              <input
+                class="form-control"
+                type="date"
+                name="fecha_equipo"
+                required />
+            </div>
+            <div class="col-md-6">
+            <label for="comentario_equipo" class="form-label">
+                Comentario
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="comentario_equipo"
+                required />
+            </div>
+          </div>
+          <div class="mb-3 mt-4 text-center">
+            <button type="submit" class="btn rounded-pill btn-primary">
+              Guardar servcio ahora
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block customJS %}
+<script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
+{% endblock %}

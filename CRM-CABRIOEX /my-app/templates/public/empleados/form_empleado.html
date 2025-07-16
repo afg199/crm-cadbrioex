@@ -1,0 +1,146 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+{% block title %}Crud con Python 🐍 | Registrar Empleado{% endblock %}
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">REGISTRAR NUEVO CLIENTE</h3>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+      <form
+        class="form-horizontal mx-auto"
+        method="POST"
+        action="/form-registrar-empleado"
+        autocomplete="off"
+        enctype="multipart/form-data">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="nombre_cliente" class="form-label">
+                Nombre
+              </label>
+              <input
+                type="text"
+                name="nombre_cliente"
+                class="form-control"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="apellido_cliente" class="form-label">
+                Apellidos
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="apellido_cliente"
+                required />
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="nif_cliente" class="form-label">
+                NIF
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="nif_cliente"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="telefono_cliente" class="form-label">
+                Telefono
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="telefono_cliente"
+                required />
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="email_cliente" class="form-label">
+                Email
+              </label>
+              <input
+                class="form-control"
+                type="email"
+                name="email_cliente"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="provincia_cliente" class="form-label">
+                Provincia 
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="provincia_cliente"
+                required />
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="poblacion_cliente" class="form-label">
+                Población
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="poblacion_cliente"
+                required />
+            </div>
+            <div class="col-md-6">
+            <label for="direccion_cliente" class="form-label">
+                Dirección
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="direccion_cliente"
+                required />
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="cp_cliente" class="form-label">
+                Código Postal
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="cp_cliente"
+                required />
+            </div>
+          </div>
+
+          <div class="mb-3 mt-4 text-center">
+            <button type="submit" class="btn rounded-pill btn-primary">
+              Guardar registro ahora
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block customJS %}
+<script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
+{% endblock %}

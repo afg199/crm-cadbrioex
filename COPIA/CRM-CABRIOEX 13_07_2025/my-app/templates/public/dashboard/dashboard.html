@@ -1,0 +1,482 @@
+{% extends 'public/base_cpanel.html' %}
+
+{% block title %}Dashboard - CRM CADBRIOEX{% endblock %}
+
+{% block customCSS %}
+<style>
+.dashboard-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.filter-section {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.btn-filter {
+    background: #667eea;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 25px;
+    color: white;
+    font-weight: 500;
+}
+
+.btn-filter:hover {
+    background: #5a6fd8;
+    color: white;
+}
+
+.population-item {
+    background: #e3f2fd;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 5px 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.population-item:hover {
+    background: #bbdefb;
+    transform: translateX(5px);
+}
+
+.population-item.active {
+    background: #2196f3;
+    color: white;
+}
+/* NUEVOS ESTILOS PARA INTERACTIVIDAD */
+.population-panel {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.population-item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.population-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.population-item.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-left: 4px solid #2196f3;
+    transform: translateX(10px);
+}
+
+.month-year-selector {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.clear-filters-btn {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 15px;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.clear-filters-btn:hover {
+    background: #ff3838;
+    transform: scale(1.05); // Completar la propiedad
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Dashboard Analítico</h2>
+        </div>
+    </div>
+
+    <!-- Estadísticas Principales -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card text-center">
+                <div class="stat-number">{{ estadisticas.total_clientes }}</div>
+                <div class="stat-label">CLIENTES</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card text-center">
+                <div class="stat-number">{{ estadisticas.total_equipos }}</div>
+                <div class="stat-label">EQUIPOS</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card text-center">
+                <div class="stat-number">{{ estadisticas.total_servicios }}</div>
+                <div class="stat-label">SERVICIOS</div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="dashboard-card text-center">
+                <div class="stat-number">{{ estadisticas.clientes_mes }}</div>
+                <div class="stat-label">NUEVOS ESTE MES</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="row">
+        <div class="col-12">
+            <div class="filter-section">
+                <h5 class="mb-3">Filtros de Análisis</h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Año:</label>
+                        <select class="form-select" id="filtroAño">
+                            <option value="">Todos los años</option>
+                            <option value="2024" selected>2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Mes:</label>
+                        <select class="form-select" id="filtroMes">
+                            <option value="">Todos los meses</option>
+                            <option value="1">Enero</option>
+                            <option value="2">Febrero</option>
+                            <option value="3">Marzo</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Mayo</option>
+                            <option value="6">Junio</option>
+                            <option value="7">Julio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Población:</label>
+                        <select class="form-select" id="filtroPoblacion">
+                            <option value="">Todas las poblaciones</option>
+                            {% for poblacion in poblaciones %}
+                            <option value="{{ poblacion }}">{{ poblacion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-filter w-100" onclick="aplicarFiltros()">Aplicar Filtros</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row">
+        <!-- Gráfico de Poblaciones -->
+        <div class="col-xl-8">
+            <div class="chart-container">
+                <h5 class="mb-3">Clientes por Población</h5>
+                <div id="chartPoblaciones"></div>
+            </div>
+        </div>
+        
+        <!-- Lista de Poblaciones -->
+        <div class="col-xl-4">
+            <div class="chart-container">
+                <h5 class="mb-3">POBLACIÓN</h5>
+                <div id="listaPoblaciones" style="max-height: 400px; overflow-y: auto;">
+                    {% for item in datos_poblacion %}
+                    <div class="population-item" data-poblacion="{{ item.poblacion }}">
+                        <strong>{{ item.poblacion }}</strong>
+                        <span class="float-end badge bg-primary">{{ item.cantidad }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gráfico Circular de Servicios -->
+        <div class="col-xl-6">
+            <div class="chart-container">
+                <h5 class="mb-3">Distribución de Servicios</h5>
+                <div id="chartServicios"></div>
+            </div>
+        </div>
+        
+        <!-- Gráfico de Servicios por Mes -->
+        <div class="col-xl-6">
+            <div class="chart-container">
+                <h5 class="mb-3">Servicios por Mes</h5>
+                <div id="chartServiciosMes"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Datos Filtrados -->
+    <div class="row">
+        <div class="col-12">
+            <div class="chart-container">
+                <h5 class="mb-3">Datos Filtrados</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped" id="tablaDatosFiltrados">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Población</th>
+                                <th>Fecha Registro</th>
+                                <th>Equipos</th>
+                                <th>Servicios</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyTablaDatos">
+                            <!-- Se llenará dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block customJS %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+// Variables globales para los gráficos
+let chartClientesPoblacion, chartMarcas, chartGarantias, chartServiciosTipo;
+let selectedPoblacion = null;
+let selectedMonth = null;
+let selectedYear = null;
+let isFiltering = false;
+
+// Datos del servidor
+const datosClientesPoblacion = {{ clientes_poblacion | tojson }};
+const datosMarcas = {{ datos_marcas | tojson }};
+const datosGarantias = {{ datos_garantias | tojson }};
+const datosServiciosTipo = {{ servicios_tipo | tojson }};
+
+// Inicializar dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    initChartClientesPoblacion();
+    initChartMarcas();
+    initChartGarantias();
+    initChartServiciosTipo();
+    initEventListeners();
+    addFilterIndicators();
+});
+
+// Función para añadir indicadores de filtro
+function addFilterIndicators() {
+    const monthYearSelector = document.querySelector('.month-year-selector');
+    const clearBtn = document.createElement('button');
+    clearBtn.className = 'clear-filters-btn';
+    clearBtn.innerHTML = '🗑️ Limpiar Filtros';
+    clearBtn.onclick = clearAllFilters;
+    monthYearSelector.appendChild(clearBtn);
+}
+
+// Función para limpiar todos los filtros
+function clearAllFilters() {
+    selectedPoblacion = null;
+    selectedMonth = null;
+    selectedYear = null;
+    
+    document.querySelectorAll('.population-item, .month-btn, .year-btn').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    location.reload();
+}
+
+// Función para aplicar filtros
+function applyFilters() {
+    if (isFiltering) return;
+    isFiltering = true;
+    
+    showLoadingIndicator();
+    
+    const filtros = {
+        poblacion: selectedPoblacion,
+        mes: selectedMonth,
+        año: selectedYear
+    };
+    
+    fetch('/dashboard/api/datos-filtrados', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filtros)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateDashboardData(data.datos);
+        } else {
+            console.error('Error al filtrar datos:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error en la petición:', error);
+    })
+    .finally(() => {
+        hideLoadingIndicator();
+        isFiltering = false;
+    });
+}
+
+// Función para actualizar los datos del dashboard
+function updateDashboardData(datos) {
+    if (datos.estadisticas) {
+        document.querySelector('.stats-number').textContent = datos.estadisticas.total_clientes;
+    }
+    
+    if (datos.clientes_poblacion && chartClientesPoblacion) {
+        const newData = datos.clientes_poblacion.map(item => item.cantidad);
+        const newLabels = datos.clientes_poblacion.map(item => item.poblacion);
+        
+        chartClientesPoblacion.updateOptions({
+            series: [{ data: newData }],
+            xaxis: { categories: newLabels }
+        });
+    }
+    
+    if (datos.servicios_tipo && chartServiciosTipo) {
+        const newData = datos.servicios_tipo.map(item => item.cantidad);
+        const newLabels = datos.servicios_tipo.map(item => item.tipo_servicio_nombre);
+        
+        chartServiciosTipo.updateOptions({
+            series: newData,
+            labels: newLabels
+        });
+    }
+}
+
+// Funciones de indicadores de carga
+function showLoadingIndicator() {
+    const indicator = document.createElement('div');
+    indicator.id = 'loading-indicator';
+    indicator.innerHTML = `
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2">Filtrando datos...</p>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(indicator);
+}
+
+function hideLoadingIndicator() {
+    const indicator = document.getElementById('loading-indicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+// Event listeners mejorados
+function initEventListeners() {
+    // Filtro por población con efecto visual
+    document.querySelectorAll('.population-item').forEach(item => {
+        item.addEventListener('click', function() {
+            document.querySelectorAll('.population-item').forEach(el => el.classList.remove('active'));
+            
+            if (selectedPoblacion === this.dataset.poblacion) {
+                selectedPoblacion = null;
+            } else {
+                this.classList.add('active');
+                selectedPoblacion = this.dataset.poblacion;
+            }
+            
+            console.log('Población seleccionada:', selectedPoblacion);
+            applyFilters();
+        });
+    });
+    
+    // Filtro por mes
+    document.querySelectorAll('.month-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (selectedMonth === this.dataset.month) {
+                selectedMonth = null;
+                this.classList.remove('active');
+            } else {
+                document.querySelectorAll('.month-btn').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                selectedMonth = this.dataset.month;
+            }
+            
+            console.log('Mes seleccionado:', selectedMonth);
+            applyFilters();
+        });
+    });
+    
+    // Filtro por año
+    document.querySelectorAll('.year-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (selectedYear === this.dataset.year) {
+                selectedYear = null;
+                this.classList.remove('active');
+            } else {
+                document.querySelectorAll('.year-btn').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                selectedYear = this.dataset.year;
+            }
+            
+            console.log('Año seleccionado:', selectedYear);
+            applyFilters();
+        });
+    });
+}
+
+</script>
+{% endblock %}

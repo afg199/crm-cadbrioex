@@ -1,0 +1,401 @@
+{% extends 'public/base_cpanel.html' %}
+
+{% block title %}Dashboard - CRM CADBRIOEX{% endblock %}
+
+{% block customCSS %}
+<style>
+.dashboard-container {
+    background: #f8f9fa;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stats-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    height: 400px;
+}
+
+.population-panel {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    height: 500px;
+    overflow-y: auto;
+}
+
+.population-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.population-item:hover {
+    background-color: #f8f9fa;
+}
+
+.population-item.active {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.month-year-selector {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.month-grid, .year-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.month-btn, .year-btn {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.month-btn:hover, .year-btn:hover {
+    background: #f0f0f0;
+}
+
+.month-btn.active, .year-btn.active {
+    background: #2196f3;
+    color: white;
+    border-color: #2196f3;
+}
+
+.chart-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+    <!-- Contador de Clientes Destacado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="stats-card">
+                <div class="stats-number">{{ estadisticas.total_clientes }}</div>
+                <div class="stats-label">CLIENTES REGISTRADOS</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gráfico de Barras Horizontales - Clientes por Población -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="chart-container">
+                <div class="chart-title">📊 Clientes por Población</div>
+                <div id="chartClientesPoblacion"></div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral de Poblaciones -->
+        <div class="col-xl-3 col-lg-3">
+            <div class="population-panel">
+                <h6 class="mb-3">🏘️ POBLACIÓN</h6>
+                {% for poblacion in todas_poblaciones %}
+                <div class="population-item" data-poblacion="{{ poblacion.poblacion }}">
+                    <div class="d-flex justify-content-between">
+                        <span>{{ poblacion.poblacion }}</span>
+                        <span class="badge bg-primary">{{ poblacion.cantidad }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Selectores de Mes y Año -->
+        <div class="col-xl-3 col-lg-3">
+            <div class="month-year-selector">
+                <h6>📅 MES</h6>
+                <div class="month-grid">
+                    <div class="month-btn" data-month="1">1</div>
+                    <div class="month-btn" data-month="2">2</div>
+                    <div class="month-btn" data-month="3">3</div>
+                    <div class="month-btn" data-month="4">4</div>
+                    <div class="month-btn" data-month="5">5</div>
+                    <div class="month-btn" data-month="6">6</div>
+                    <div class="month-btn" data-month="7">7</div>
+                    <div class="month-btn" data-month="8">8</div>
+                    <div class="month-btn" data-month="9">9</div>
+                    <div class="month-btn" data-month="10">10</div>
+                    <div class="month-btn" data-month="11">11</div>
+                    <div class="month-btn" data-month="12">12</div>
+                </div>
+                
+                <h6 class="mt-4">📅 AÑO</h6>
+                <div class="year-grid">
+                    <div class="year-btn" data-year="2024">2024</div>
+                    <div class="year-btn" data-year="2023">2023</div>
+                    <div class="year-btn" data-year="2022">2022</div>
+                    <div class="year-btn" data-year="2021">2021</div>
+                    <div class="year-btn" data-year="2020">2020</div>
+                    <div class="year-btn" data-year="2019">2019</div>
+                    <div class="year-btn" data-year="2018">2018</div>
+                    <div class="year-btn" data-year="2017">2017</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gráfico Circular - Marcas de Equipos -->
+        <div class="col-xl-4 col-lg-4">
+            <div class="chart-container">
+                <div class="chart-title">🏷️ Marcas Registradas</div>
+                <div id="chartMarcas"></div>
+            </div>
+        </div>
+
+        <!-- Gráfico Circular - Garantías -->
+        <div class="col-xl-4 col-lg-4">
+            <div class="chart-container">
+                <div class="chart-title">🛡️ Estado de Garantías</div>
+                <div id="chartGarantias"></div>
+            </div>
+        </div>
+
+        <!-- Gráfico de Barras Verticales - Servicios por Tipo -->
+        <div class="col-xl-4 col-lg-4">
+            <div class="chart-container">
+                <div class="chart-title">🔧 Servicios por Tipo</div>
+                <div id="chartServiciosTipo"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block customJS %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+// Variables globales para los gráficos
+let chartClientesPoblacion, chartMarcas, chartGarantias, chartServiciosTipo;
+let selectedPoblacion = null;
+let selectedMonth = null;
+let selectedYear = null;
+
+// Datos del servidor
+const datosClientesPoblacion = {{ clientes_poblacion | tojson }};
+const datosMarcas = {{ datos_marcas | tojson }};
+const datosGarantias = {{ datos_garantias | tojson }};
+const datosServiciosTipo = {{ servicios_tipo | tojson }};
+
+// Inicializar dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    initChartClientesPoblacion();
+    initChartMarcas();
+    initChartGarantias();
+    initChartServiciosTipo();
+    initEventListeners();
+});
+
+// Gráfico de barras horizontales - Clientes por Población
+function initChartClientesPoblacion() {
+    const options = {
+        series: [{
+            name: 'Clientes',
+            data: datosClientesPoblacion.map(item => item.cantidad)
+        }],
+        chart: {
+            type: 'bar',
+            height: 350
+        },
+        plotOptions: {
+            bar: {
+                horizontal: true,
+                borderRadius: 4
+            }
+        },
+        dataLabels: {
+            enabled: true
+        },
+        xaxis: {
+            categories: datosClientesPoblacion.map(item => item.poblacion)
+        },
+        colors: ['#2E93fA'],
+        title: {
+            text: 'Distribución de Clientes por Población'
+        }
+    };
+    
+    chartClientesPoblacion = new ApexCharts(document.querySelector('#chartClientesPoblacion'), options);
+    chartClientesPoblacion.render();
+}
+
+// Gráfico circular - Marcas
+function initChartMarcas() {
+    const options = {
+        series: datosMarcas.map(item => item.cantidad),
+        chart: {
+            type: 'donut',
+            height: 300
+        },
+        labels: datosMarcas.map(item => item.marca),
+        colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'],
+        legend: {
+            position: 'bottom'
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }]
+    };
+    
+    chartMarcas = new ApexCharts(document.querySelector('#chartMarcas'), options);
+    chartMarcas.render();
+}
+
+// Gráfico circular - Garantías
+function initChartGarantias() {
+    const options = {
+        series: datosGarantias.map(item => item.cantidad),
+        chart: {
+            type: 'pie',
+            height: 300
+        },
+        labels: datosGarantias.map(item => item.estado_garantia),
+        colors: ['#28a745', '#dc3545'],
+        legend: {
+            position: 'bottom'
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }]
+    };
+    
+    chartGarantias = new ApexCharts(document.querySelector('#chartGarantias'), options);
+    chartGarantias.render();
+}
+
+// Gráfico de barras verticales - Servicios por Tipo
+function initChartServiciosTipo() {
+    const options = {
+        series: [{
+            name: 'Servicios',
+            data: datosServiciosTipo.map(item => item.cantidad)
+        }],
+        chart: {
+            type: 'bar',
+            height: 350
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                columnWidth: '60%'
+            }
+        },
+        dataLabels: {
+            enabled: true
+        },
+        xaxis: {
+            categories: datosServiciosTipo.map(item => item.tipo_servicio_nombre),
+            labels: {
+                rotate: -45
+            }
+        },
+        colors: ['#FF6B6B'],
+        title: {
+            text: 'Servicios Realizados por Tipo'
+        }
+    };
+    
+    chartServiciosTipo = new ApexCharts(document.querySelector('#chartServiciosTipo'), options);
+    chartServiciosTipo.render();
+}
+
+// Event listeners
+function initEventListeners() {
+    // Filtro por población
+    document.querySelectorAll('.population-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remover clase active de todos los elementos
+            document.querySelectorAll('.population-item').forEach(el => el.classList.remove('active'));
+            
+            // Agregar clase active al elemento clickeado
+            this.classList.add('active');
+            
+            selectedPoblacion = this.dataset.poblacion;
+            console.log('Población seleccionada:', selectedPoblacion);
+            // Aquí puedes agregar lógica para filtrar los datos
+        });
+    });
+    
+    // Filtro por mes
+    document.querySelectorAll('.month-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.month-btn').forEach(el => el.classList.remove('active'));
+            this.classList.add('active');
+            selectedMonth = this.dataset.month;
+            console.log('Mes seleccionado:', selectedMonth);
+        });
+    });
+    
+    // Filtro por año
+    document.querySelectorAll('.year-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.year-btn').forEach(el => el.classList.remove('active'));
+            this.classList.add('active');
+            selectedYear = this.dataset.year;
+            console.log('Año seleccionado:', selectedYear);
+        });
+    });
+}
+</script>
+{% endblock %}

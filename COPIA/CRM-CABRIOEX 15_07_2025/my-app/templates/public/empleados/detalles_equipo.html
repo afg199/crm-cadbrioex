@@ -1,0 +1,192 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+{% block title %}Crud con Python 🐍 | Registrar Empleado{% endblock %}
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<!---->
+{% if (detalle_equipo|length) %}
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">
+        <a href="{{ url_for('home_bp.detalleEmpleado', idEmpleado=detalle_equipo.id_Clientes) }}">
+          <i class="bi bi-arrow-left-circle"></i>
+        </a>
+        <span>INFORMACIÓN DEL EQUIPO</span>
+        <a href="{{ url_for('home_bp.viewEditarEquipo', id=detalle_equipo.id_Equipos) }}" class="ms-4" title="Editar equipo" style="color: inherit;">
+          <i class="bi bi-pencil-square"></i>
+        </a>
+      </h3>
+      <hr />
+    </div>
+  </div>
+
+ <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <label for="marca_equipo" class="form-label">
+              Marca del equipo
+            </label>
+            <br />
+            {{ detalle_equipo.marca }}
+          </div>
+          <div class="col-md-6">
+            <label for="modelo_equipo" class="form-label">
+              Modelo del equipo
+            </label>
+            <br />
+            {{ detalle_equipo.modelo }}
+          </div>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <label for="n_serie" class="form-label">
+              Número de serie
+            </label>
+            <br />
+            {{ detalle_equipo.n_serie }}
+          </div>
+          <div class="col-md-6">
+            <label for="garantia_equipo" class="form-label">
+              Garantía
+            </label>
+            <br />
+            {{ detalle_equipo.garantia }}
+          </div>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <label for="mg_equipo" class="form-label">
+              Meses de garantía
+            </label>
+            <br />
+            {{ detalle_equipo.meses_garantia }}
+          </div>
+          <div class="col-md-6">
+            <label for="cb_equipo" class="form-label">
+              Comprada en Biomex
+            </label>
+            <br />
+            {{ detalle_equipo.compra_biomex }}
+          </div>
+        </div>
+
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <label for="fecha_equipo" class="form-label">
+              Fecha de compra
+            </label>
+            <br />
+            {{ detalle_equipo.fecha_compra }}
+          </div>
+          <div class="col-md-6">
+            <label for="comentario_equipo" class="form-label">
+              Comentario
+            </label>
+            <br />
+            {{ detalle_equipo.comentario }}
+          </div>
+        </div>
+        <div class="mb-3 mt-4 text-center">
+          <a href="{{ url_for('home_bp.viewFormServicio', id_equipo=detalle_equipo.id_Equipos ) }}" type="submit" class="btn rounded-pill btn-primary">
+            Registrar Servicio
+            <i class="bi bi-fire"></i>
+          </a>
+        </div> 
+      </div>
+    </div>
+  </div> 
+</div>
+<!--#####################################-->
+<!--TABLA DE EQUIPOS QUE TIENE EL CLIENTE-->
+<!--#####################################-->
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">SERVICIOS REALIZADO EN EL EQUIPO</h3>
+      <hr />
+    </div>
+  </div>
+ <div class="row justify-content-center mb-2">
+  <div class="table-responsive text-nowrap table-hover">
+    <table
+      table-hover
+      id="servicios"
+      class="table table-striped table-bordered"
+      cellspacing="0"
+      width="100%">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Tipo</th>
+          <th>Fecha</th>
+          <th>Trabajador</th>
+          <th>Comentario</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for servicios in servcios_equipo %}
+          <tr id="servicios_{{ servicios.id_Servicios}}">
+            <td>{{ loop.index }}</td>
+            <td>{{ servicios.tipo_servicio }}</td>
+            <td>{{ servicios.fecha_servicio }}</td>
+            <td>{{ servicios.trabajador }}</td>
+            <td>{{ servicios.comentario }}</td>
+            <td width="10px">
+              <a
+                href="{{ url_for('home_bp.detalleServicio', idServicio=servicios.id_Servicios) }}"
+                title="Ver envio"
+                type="button"
+                class="btn btn-info btn-sm"
+                data-bs-toggle="tooltip"
+                data-bs-offset="0,4"
+                data-bs-placement="top"
+                data-bs-html="true"
+                title="<span>Ver detalles</span>">
+                <i class="bi bi-eye"></i>
+                Ver detalles
+              </a>
+              <a
+                href="{{ url_for('home_bp.viewEditarServicio', id = servicios.id_Servicios) }}"
+                class="btn btn-success btn-sm"
+                tooltip="Actualizar Registro">
+                <i class="bi bi-arrow-clockwise"></i>
+                Actualizar
+              </a>
+              <a
+                href="#"
+                onclick="eliminarServicio('{{ servicios.id_Servicios }}', '{{ detalle_equipo.id_Equipos }}' );"
+                class="btn btn-danger btn-sm"
+                data-bs-toggle="tooltip"
+                data-bs-offset="0,4"
+                data-bs-placement="top"
+                data-bs-html="true"
+                title="<span>Eliminar servicio {{ servicios.fecha_servicio }}</span>">
+                <i class="bi bi-trash3"></i>
+                Eliminar
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div> 
+{% else %}
+<h2 class="text-center">
+  No existe el Equipo 😭
+  <hr />
+</h2>
+{% endif %} {% endblock %}

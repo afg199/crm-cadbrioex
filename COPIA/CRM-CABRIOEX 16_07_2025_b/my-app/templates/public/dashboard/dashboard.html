@@ -1,0 +1,643 @@
+{% extends 'public/base_cpanel.html' %}
+
+{% block title %}Dashboard - CRM CADBRIOEX{% endblock %}
+
+{% block customCSS %}
+<style>
+.dashboard-container {
+    background: #f8f9fa;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.stats-card {
+    background: #dc3545;
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 5px; 
+}
+
+.stats-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    height: 400px;
+}
+
+.population-panel {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    height: 500px;
+    overflow-y: auto;
+}
+
+.population-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.population-item:hover {
+    background-color: #f8f9fa;
+}
+
+.population-item.active {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.month-year-selector {
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.month-grid, .year-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.month-btn, .year-btn {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s;
+    font-size: 0.85rem;
+}
+
+.month-btn:hover, .year-btn:hover {
+    background: #f0f0f0;
+}
+
+.month-btn.active, .year-btn.active {
+    background: #2196f3;
+    color: white;
+    border-color: #2196f3;
+}
+
+.chart-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Estilos para elementos interactivos */
+.population-item {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 2px 0;
+}
+
+.population-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+}
+
+.population-item.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+.month-btn, .year-btn {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 2px;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background-color: white;
+}
+
+.month-btn:hover, .year-btn:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.05);
+}
+
+.month-btn.active, .year-btn.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.clear-filters-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px 0;
+    transition: all 0.3s ease;
+}
+
+.clear-filters-btn:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+    <!-- Contador de Clientes Destacado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="stats-card">
+                <div class="stats-number">{{ estadisticas.total_clientes }}</div>
+                <div class="stats-label">CLIENTES REGISTRADOS</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gráfico de Barras Horizontales - Clientes por Población -->
+        <div class="col-xl-6 col-lg-6">
+            <div class="chart-container">
+                <div class="chart-title">Clientes por Población</div>
+                <div id="chartClientesPoblacion"></div>
+            </div>
+        </div>
+
+        <!-- Panel Lateral de Poblaciones -->
+        <div class="col-xl-3 col-lg-3">
+            <div class="population-panel">
+                <h6 class="mb-3">POBLACIÓN</h6>
+                {% for poblacion in todas_poblaciones %}
+                <div class="population-item" data-poblacion="{{ poblacion.poblacion }}">
+                    <div class="d-flex justify-content-between">
+                        <span>{{ poblacion.poblacion }}</span>
+                        <span class="badge bg-primary">{{ poblacion.cantidad }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Selectores de Mes y Año -->
+        <div class="col-xl-3 col-lg-3">
+            <div class="month-year-selector">
+                <h6>MES</h6>
+                <div class="month-grid" id="monthGrid">
+                    <!-- Los meses se cargarán dinámicamente -->
+                </div>
+                
+                <h6 class="mt-4">AÑO</h6>
+                <div class="year-grid" id="yearGrid">
+                    <!-- Los años se cargarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Gráfico Circular - Marcas de Equipos -->
+        <div class="col-xl-4 col-lg-4">
+            <div class="chart-container">
+                <div class="chart-title">🏷️ Marcas Registradas</div>
+                <div id="chartMarcas"></div>
+            </div>
+        </div>
+
+        <!-- Gráfico Circular - Garantías -->
+        <div class="col-xl-4 col-lg-4">
+            <div class="chart-container">
+                <div class="chart-title">Estado de Garantías</div>
+                <div id="chartGarantias"></div>
+            </div>
+        </div>
+
+        <!-- Gráfico de Barras Verticales - Servicios por Tipo -->
+        <div class="col-xl-4 col-lg-4">
+            <div class="chart-container">
+                <div class="chart-title">Servicios por Tipo</div>
+                <div id="chartServiciosTipo"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block customJS %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+// Variables globales para los gráficos
+let chartClientesPoblacion, chartMarcas, chartGarantias, chartServiciosTipo;
+let selectedPoblacion = null;
+let selectedMonth = null;
+let selectedYear = null;
+// AGREGAR ESTAS NUEVAS VARIABLES:
+let selectedMarca = null;
+let selectedGarantia = null;
+let selectedTipoServicio = null;
+
+// Datos del servidor
+let datosClientesPoblacion = {{ clientes_poblacion | tojson }};
+let datosMarcas = {{ datos_marcas | tojson }};
+let datosGarantias = {{ datos_garantias | tojson }};
+let datosServiciosTipo = {{ servicios_tipo | tojson }};
+
+// Inicializar dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar años y meses dinámicamente
+    loadAvailableYears();
+    loadAvailableMonths();
+    
+    // Inicializar gráficos
+    initChartClientesPoblacion();
+    initChartMarcas();
+    initChartGarantias();
+    initChartServiciosTipo();
+    
+    // Inicializar event listeners
+    initEventListeners();
+    addClearFiltersButton();
+});
+// ==================== CÓDIGO NUEVO: FILTROS DINÁMICOS ====================
+
+// Cargar años disponibles al inicializar
+function loadAvailableYears() {
+    fetch('/dashboard/api/años-disponibles')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const yearGrid = document.getElementById('yearGrid');
+                yearGrid.innerHTML = '';
+                
+                data.años.forEach(item => {
+                    const yearBtn = document.createElement('div');
+                    yearBtn.className = 'year-btn';
+                    yearBtn.dataset.year = item.año;
+                    yearBtn.textContent = item.año;
+                    yearGrid.appendChild(yearBtn);
+                });
+                
+                // Agregar event listeners a los nuevos botones
+                initYearEventListeners();
+            }
+        })
+        .catch(error => console.error('Error al cargar años:', error));
+}
+// Función para agregar botón de limpiar filtros
+function addClearFiltersButton() {
+    const container = document.querySelector('.container-fluid');
+    if (container) {
+        const clearBtn = document.createElement('button');
+        clearBtn.className = 'clear-filters-btn';
+        clearBtn.innerHTML = 'Limpiar Filtros';
+        clearBtn.onclick = clearAllFilters;
+        container.insertBefore(clearBtn, container.firstChild);
+    }
+}
+
+// Gráfico de barras horizontales - Clientes por Población
+function initChartClientesPoblacion() {
+    const options = {
+        series: [{
+            name: 'Clientes',
+            data: datosClientesPoblacion.map(item => item.cantidad)
+        }],
+        chart: {
+            type: 'bar',
+            height: 350
+        },
+        plotOptions: {
+            bar: {
+                horizontal: true,
+                borderRadius: 4
+            }
+        },
+        dataLabels: {
+            enabled: true
+        },
+        xaxis: {
+            categories: datosClientesPoblacion.map(item => item.poblacion)
+        },
+        colors: ['#2E93fA'],
+        title: {
+            text: 'Distribución de Clientes por Población'
+        }
+    };
+    
+    chartClientesPoblacion = new ApexCharts(document.querySelector('#chartClientesPoblacion'), options);
+    chartClientesPoblacion.render();
+}
+
+// Gráfico circular - Marcas
+function initChartMarcas() {
+    const options = {
+        series: datosMarcas.map(item => item.cantidad),
+        chart: {
+            type: 'donut',
+            height: 300,
+            // AGREGAR ESTE EVENT LISTENER:
+            events: {
+                dataPointSelection: function(event, chartContext, config) {
+                    const selectedMarca = datosMarcas[config.dataPointIndex].marca;
+                    console.log('Marca seleccionada:', selectedMarca);
+                    applyFilters(null, null, null, selectedMarca); // año, mes, poblacion, marca
+                }
+            }
+        },
+        labels: datosMarcas.map(item => item.marca),
+        colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'],
+        legend: {
+            position: 'bottom'
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }]
+    };
+    
+    chartMarcas = new ApexCharts(document.querySelector('#chartMarcas'), options);
+    chartMarcas.render();
+}
+
+// Gráfico circular - Garantías
+function initChartGarantias() {
+    const options = {
+        series: datosGarantias.map(item => item.cantidad),
+        chart: {
+            type: 'pie',
+            height: 300,
+            events: {
+                dataPointSelection: function(event, chartContext, config) {
+                    const selectedGarantia = datosGarantias[config.dataPointIndex].estado_garantia;
+                    console.log('Garantía seleccionada:', selectedGarantia);
+                    applyFilters(null, null, null, null, selectedGarantia); // año, mes, poblacion, marca, garantia
+                }
+            }
+        },
+        labels: datosGarantias.map(item => item.estado_garantia),
+        colors: ['#28a745', '#dc3545'],
+        legend: {
+            position: 'bottom'
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }]
+    };
+    
+    chartGarantias = new ApexCharts(document.querySelector('#chartGarantias'), options);
+    chartGarantias.render();
+}
+
+// Gráfico de barras verticales - Servicios por Tipo
+function initChartServiciosTipo() {
+    const options = {
+        series: [{
+            name: 'Servicios',
+            data: datosServiciosTipo.map(item => item.cantidad)
+        }],
+        chart: {
+            type: 'bar',
+            height: 350,
+            events: {
+                dataPointSelection: function(event, chartContext, config) {
+                    const selectedServicio = datosServiciosTipo[config.dataPointIndex].tipo_servicio;
+                    console.log('Tipo de servicio seleccionado:', selectedServicio);
+                    applyFilters(null, null, null, null, null, selectedServicio); // año, mes, poblacion, marca, garantia, tipoServicio
+                }
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                columnWidth: '60%'
+            }
+        },
+        dataLabels: {
+            enabled: true
+        },
+        xaxis: {
+            categories: datosServiciosTipo.map(item => item.tipo_servicio_nombre),
+            labels: {
+                rotate: -45
+            }
+        },
+        colors: ['#FF6B6B'],
+        title: {
+            text: 'Servicios Realizados por Tipo'
+        }
+    };
+    
+    chartServiciosTipo = new ApexCharts(document.querySelector('#chartServiciosTipo'), options);
+    chartServiciosTipo.render();
+}
+
+// Event listeners
+function initEventListeners() {
+    // Filtro por población
+    document.querySelectorAll('.population-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // Remover clase active de todos los elementos
+            document.querySelectorAll('.population-item').forEach(el => el.classList.remove('active'));
+            
+            // Agregar clase active al elemento clickeado
+            this.classList.add('active');
+            
+            selectedPoblacion = this.dataset.poblacion;
+            console.log('Población seleccionada:', selectedPoblacion);
+            applyFilters();
+        });
+    });
+    
+    // Filtro por mes
+    document.querySelectorAll('.month-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.month-btn').forEach(el => el.classList.remove('active'));
+            this.classList.add('active');
+            selectedMonth = this.dataset.month;
+            console.log('Mes seleccionado:', selectedMonth);
+            applyFilters();
+        });
+    });
+    
+    // Filtro por año
+    document.querySelectorAll('.year-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.year-btn').forEach(el => el.classList.remove('active'));
+            this.classList.add('active');
+            selectedYear = this.dataset.year;
+            console.log('Año seleccionado:', selectedYear);
+            applyFilters();
+        });
+    });
+}
+
+// Función para aplicar filtros
+function applyFilters(año = null, mes = null, poblacion = null, marca = null, garantia = null, tipoServicio = null) {
+    // Actualizar variables globales si se proporcionan nuevos valores
+    if (año !== null) selectedYear = año;
+    if (mes !== null) selectedMonth = mes;
+    if (poblacion !== null) selectedPoblacion = poblacion;
+    if (marca !== null) selectedMarca = marca;
+    if (garantia !== null) selectedGarantia = garantia;
+    if (tipoServicio !== null) selectedTipoServicio = tipoServicio;
+    
+    // Mostrar indicador de carga
+    document.body.classList.add('loading');
+    
+    const filtros = {
+        año: selectedYear,
+        mes: selectedMonth,
+        poblacion: selectedPoblacion,
+        marca: selectedMarca,
+        garantia: selectedGarantia,
+        tipo_servicio: selectedTipoServicio
+    };
+    
+    console.log('Aplicando filtros:', filtros);
+    
+    fetch('/dashboard/api/datos-filtrados', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(filtros)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateDashboard(data.datos);
+        } else {
+            console.error('Error al obtener datos filtrados:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error en la petición:', error);
+    })
+    .finally(() => {
+        // Ocultar indicador de carga
+        document.body.classList.remove('loading');
+    });
+}
+
+// Función para limpiar todos los filtros
+function clearAllFilters() {
+    selectedPoblacion = null;
+    selectedMonth = null;
+    selectedYear = null;
+    selectedMarca = null;
+    selectedGarantia = null;
+    selectedTipoServicio = null;
+    
+    // Remover clases active
+    document.querySelectorAll('.population-item, .month-btn, .year-btn').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Aplicar filtros vacíos (mostrar todos los datos)
+    applyFilters();
+}
+
+// Función para actualizar el dashboard con datos filtrados
+function updateDashboard(datos) {
+    console.log('Actualizando dashboard con datos:', datos);
+    
+    // Actualizar estadísticas
+    if (datos.estadisticas) {
+        const clientCount = document.querySelector('.client-count');
+        if (clientCount) {
+            clientCount.textContent = datos.estadisticas.total_clientes || 0;
+        }
+        // Actualizar otros contadores si existen
+    }
+    
+    // Actualizar gráfico de clientes por población
+    if (datos.clientes_poblacion && chartClientesPoblacion) {
+        chartClientesPoblacion.updateOptions({
+            series: [{
+                name: 'Clientes',
+                data: datos.clientes_poblacion.map(item => item.cantidad)
+            }],
+            xaxis: {
+                categories: datos.clientes_poblacion.map(item => item.poblacion)
+            }
+        });
+    }
+    
+    // Actualizar gráfico de servicios por tipo
+    if (datos.servicios_tipo && chartServiciosTipo) {
+        chartServiciosTipo.updateOptions({
+            series: [{
+                name: 'Servicios',
+                data: datos.servicios_tipo.map(item => item.cantidad)
+            }],
+            xaxis: {
+                categories: datos.servicios_tipo.map(item => item.tipo_servicio_nombre)
+            }
+        });
+    }
+    
+    // NUEVO: Actualizar gráfico de marcas
+    if (datos.datos_marcas && chartMarcas) {
+        chartMarcas.updateOptions({
+            series: datos.datos_marcas.map(item => item.cantidad),
+            labels: datos.datos_marcas.map(item => item.marca)
+        });
+    }
+    
+    // NUEVO: Actualizar gráfico de garantías
+    if (datos.datos_garantias && chartGarantias) {
+        chartGarantias.updateOptions({
+            series: datos.datos_garantias.map(item => item.cantidad),
+            labels: datos.datos_garantias.map(item => item.estado_garantia)
+        });
+    }
+}
+
+</script>
+{% endblock %}

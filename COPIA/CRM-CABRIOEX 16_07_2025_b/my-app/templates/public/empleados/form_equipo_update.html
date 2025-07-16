@@ -1,0 +1,174 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+{% block title %}Crud con Python 🐍 | Registrar Nuevo Empleado{% endblock %}
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<div class="card" style="border-radius: 0px !important">
+  {% if respuestaEquipo|length %}
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">
+        <a href="/detalles-empleado/{{ respuestaEquipo.id_Clientes }}">
+          <i class="bi bi-arrow-left-circle"></i>
+        </a>
+        ACTUALIZAR DATOS DEL EQUIPO
+      </h3>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+      <form
+        class="form-horizontal mx-auto"
+        method="POST"
+        action="{{ url_for('actualizarEquipo', id = respuestaEquipo.id_Equipos ) }}"
+        autocomplete="off"
+        enctype="multipart/form-data">
+        <input
+          type="text"
+          class="form-control"
+          name="id_Equipos"
+          value="{{ respuestaEquipo.id_Equipos }}"
+          required
+          hidden />
+
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="marca_equipo" class="form-label">
+                Marca del equipo
+              </label>
+              <input
+                type="text"
+                name="marca_equipo"
+                value="{{ respuestaEquipo.marca }}"
+                class="form-control"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="modelo_equipo" class="form-label">
+                Modelo del equipo
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="modelo_equipo"
+                value="{{ respuestaEquipo.modelo }}"
+                required />
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="ns_equipo" class="form-label">
+                Número de serie
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="ns_equipo"
+                value="{{ respuestaEquipo.n_serie }}"
+                required />
+            </div>
+
+            <div class="col-md-6">
+              <label for="garantia_equipo" class="form-label">
+                Garantía
+              </label>
+              {% with tipo_garantia = {"1": "SI", "2": "NO"} %}
+              <select class="form-select" name="garantia_equipo">
+                {% for clave, valor in tipo_garantia.items() %} {% if clave ==
+                respuestaEquipo.garantia|string %}
+                <option value="{{ clave }}" selected>{{ valor }}</option>
+                {% else %}
+                <option value="{{ clave }}">{{ valor }}</option>
+                {% endif %} {% endfor %}
+              </select>
+              {% endwith %}
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="mesesgarantia_equipo" class="form-label">
+                Meses de garantía
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="mesesgarantia_equipo"
+                value="{{ respuestaEquipo.meses_garantia }}"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="compra_equipo" class="form-label">
+                Comprada en BIOMEX 
+              </label>
+              {% with tipo_compra = {"1": "SI", "2": "NO"} %}
+              <select class="form-select" name="compra_equipo">
+                {% for clave, valor in tipo_compra.items() %} {% if clave ==
+                respuestaEquipo.compra_biomex|string %}
+                <option value="{{ clave }}" selected>{{ valor }}</option>
+                {% else %}
+                <option value="{{ clave }}">{{ valor }}</option>
+                {% endif %} {% endfor %}
+              </select>
+              {% endwith %}
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="fecha_equipo" class="form-label">
+                Fecha de compra
+              </label>
+              <input
+                class="form-control"
+                type="date"
+                name="fecha_equipo"
+                value="{{ respuestaEquipo.fecha_compra }}"
+                required />
+            </div>
+            <div class="col-md-6">
+                <label for="comentario_equipo" class="form-label">
+                  Comentario
+                </label>
+                <input
+                  class="form-control"
+                  type="text"
+                  name="comentario_equipo"
+                  value="{{ respuestaEquipo.comentario }}"
+                required />
+            </div>
+          </div>
+
+          <div class="mb-3 mt-4 text-center">
+            <button type="submit" class="btn rounded-pill btn-primary">
+              Guardar registro ahora
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center">No existe el equipo</h3>
+    </div>
+  </div>
+
+  {% endif %}
+</div>
+{% endblock %} {% block customJS %}
+<script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
+{% endblock %}
