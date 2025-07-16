@@ -10,6 +10,7 @@
     {% include 'public/includes/head.html' %}
     <!---->
     {% block customCSS %} {% endblock %}
+    {% block filtroCSS %}{% endblock %}
   </head>
   <body>
     {% include 'public/includes/pre_loader.html' %}
@@ -39,5 +40,6 @@
     {% include 'public/includes/js.html' %}
     <!--Custom JS-->
     {% block customJS %} {% endblock %}
+    {% block filtroJS %} {% endblock %}
   </body>
 </html>

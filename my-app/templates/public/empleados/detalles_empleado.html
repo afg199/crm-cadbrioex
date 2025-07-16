@@ -19,92 +19,190 @@
         <a href="/lista-de-empleados">
           <i class="bi bi-arrow-left-circle"></i>
         </a>
-        INFORMACIÓN DEL EMPLEADO
+        <span>INFORMACIÓN DEL CLIENTE</span>
+        <a href="{{ url_for('viewEditarCliente', id=detalle_empleado.id_Clientes) }}" class="ms-4" title="Editar cliente" style="color: inherit;">
+          <i class="bi bi-pencil-square"></i>
+        </a>
       </h3>
       <hr />
     </div>
   </div>
 
-  <div class="row justify-content-center mb-2">
+ <div class="row justify-content-center mb-2">
     <div class="col-md-10">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6">
-            <label for="nombre_empleado" class="form-label">
-              Nombre del empleado
+            <label for="nombre_cliente" class="form-label">
+              Nombre
             </label>
             <br />
-            {{ detalle_empleado.nombre_empleado}}
+            {{ detalle_empleado.nombre}}
           </div>
           <div class="col-md-6">
-            <label for="apellido_empleado" class="form-label">
-              Apellido del empleado
+            <label for="apellido_cliente" class="form-label">
+              Apellidos
             </label>
             <br />
-            {{ detalle_empleado.apellido_empleado}}
+            {{ detalle_empleado.apellido}}
           </div>
         </div>
 
         <div class="row mt-2">
           <div class="col-md-6">
-            <label for="sexo_empleado" class="form-label">
-              Sexo del empleado
+            <label for="nif_cliente" class="form-label">
+              NIF
             </label>
             <br />
-            {{ detalle_empleado.sexo_empleado}}
+            {{ detalle_empleado.nif}}
           </div>
           <div class="col-md-6">
-            <label for="telefono_empleado" class="form-label">
-              Telefono del empleado
+            <label for="telefono_cliente" class="form-label">
+              Telefono
             </label>
             <br />
-            {{ detalle_empleado.telefono_empleado}}
+            {{ detalle_empleado.telefono}}
           </div>
         </div>
 
         <div class="row mt-2">
           <div class="col-md-6">
-            <label for="email_empleado" class="form-label">
-              Email del empleado
+            <label for="email_cliente" class="form-label">
+              Email
             </label>
             <br />
-            {{ detalle_empleado.email_empleado}}
+            {{ detalle_empleado.email}}
           </div>
           <div class="col-md-6">
-            <label for="profesion_empleado" class="form-label">
-              Profesión del empleado
+            <label for="provincia_cliente" class="form-label">
+              Provincia
             </label>
             <br />
-            {{ detalle_empleado.profesion_empleado}}
+            {{ detalle_empleado.provincia}}
           </div>
         </div>
 
         <div class="row mt-2">
           <div class="col-md-6">
-            <label for="salario_empleado" class="form-label">
-              Salario del empleado
+            <label for="poblacion_cliente" class="form-label">
+              Población
             </label>
             <br />
-            $ {{
-            '{:,.0f}'.format(detalle_empleado.salario_empleado).replace(',',
-            '.')}}
+            {{ detalle_empleado.poblacion}}
           </div>
           <div class="col-md-6">
-            <label for="" class="form-label"> IMAGEN DEL EMPLEADO </label>
+            <label for="direccion_cliente" class="form-label">
+              Dirección
+            </label>
             <br />
-            <img
-              style="width: 200px"
-              src="/static/fotos_empleados/{{ detalle_empleado.foto_empleado }}"
-              alt="imagen-empleado" />
+            {{ detalle_empleado.direccion}}
           </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <label for="cp_cliente" class="form-label">
+              Código Postal
+            </label>
+            <br />
+            {{ detalle_empleado.codigo_postal}}
+          </div>
+          <div class="col-md-6">
+            <label for="fecha_cliente" class="form-label">
+              Fecha de Registro
+            </label>
+            <br />
+            {{ detalle_empleado.fecha_registro}}
+          </div>
+        </div>
+        <div class="mb-3 mt-4 text-center">
+          <a href="{{ url_for('viewFormEquipo', id_cliente=detalle_empleado.id_Clientes, nombre=detalle_empleado.nombre, apellido=detalle_empleado.apellido) }}" type="submit" class="btn rounded-pill btn-primary">
+            Añadir Equipo
+            <i class="bi bi-fire"></i>
+          </a>
         </div>
       </div>
     </div>
   </div>
 </div>
+<!--#####################################-->
+<!--TABLA DE EQUIPOS QUE TIENE EL CLIENTE-->
+<!--#####################################-->
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">EQUIPOS DEL CLIENTE</h3>
+      <hr />
+    </div>
+  </div>
+ <div class="row justify-content-center mb-2">
+  <div class="table-responsive text-nowrap table-hover">
+    <table
+      table-hover
+      id="equipos"
+      class="table table-striped table-bordered"
+      cellspacing="0"
+      width="100%">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Marca</th>
+          <th>Modelo</th>
+          <th>Garantía</th>
+          <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for equipo in equipos_cliente %}
+          <tr id="equipo_{{ equipo.id_Equipos}}">
+            <td>{{ loop.index }}</td>
+            <td>{{ equipo.marca }}</td>
+            <td>{{ equipo.modelo }}</td>
+            <td>{{ equipo.garantia }}</td>
+            <td>{{ equipo.fecha_compra }}</td>
+            <td width="10px">
+              <a
+                href="/detalles-equipo/{{ equipo.id_Equipos }}"
+                title="Ver detalles"
+                type="button"
+                class="btn btn-info btn-sm"
+                data-bs-toggle="tooltip"
+                data-bs-offset="0,4"
+                data-bs-placement="top"
+                data-bs-html="true"
+                title="<span>Ver detalles</span>">
+                <i class="bi bi-eye"></i>
+                Ver detalles
+              </a>
+              <a
+                href="{{ url_for('viewEditarEquipo', id = equipo.id_Equipos) }}"
+                class="btn btn-success btn-sm"
+                tooltip="Actualizar Registro">
+                <i class="bi bi-arrow-clockwise"></i>
+                Actualizar
+              </a>
+              <a
+                href="#"
+                onclick="eliminarEquipo('{{ equipo.id_Equipos }}', '{{ detalle_empleado.id_Clientes }}');"
+                class="btn btn-danger btn-sm"
+                data-bs-toggle="tooltip"
+                data-bs-offset="0,4"
+                data-bs-placement="top"
+                data-bs-html="true"
+                title="<span>Eliminar equipo {{ equipo.marca }}</span>">
+                <i class="bi bi-trash3"></i>
+                Eliminar
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>  
 {% else %}
 <h2 class="text-center">
-  No existe el Empleado 😭
+  No existe el Cliente 😭
   <hr />
 </h2>
 {% endif %} {% endblock %}

@@ -13,7 +13,7 @@
 <div class="card" style="border-radius: 0px !important">
   <div class="row justify-content-center mb-2">
     <div class="col-md-12">
-      <h3 class="text-center mt-5 mb-3">REGISTRAR NUEVO EMPLEADO</h3>
+      <h3 class="text-center mt-5 mb-3">REGISTRAR NUEVO CLIENTE</h3>
       <hr />
     </div>
   </div>
@@ -29,111 +29,104 @@
         <div class="card-body">
           <div class="row">
             <div class="col-md-6">
-              <label for="nombre_empleado" class="form-label">
-                Nombre del empleado
+              <label for="nombre_cliente" class="form-label">
+                Nombre
               </label>
               <input
                 type="text"
-                name="nombre_empleado"
+                name="nombre_cliente"
                 class="form-control"
                 required />
             </div>
             <div class="col-md-6">
-              <label for="apellido_empleado" class="form-label">
-                Apellido del empleado
+              <label for="apellido_cliente" class="form-label">
+                Apellidos
               </label>
               <input
                 class="form-control"
                 type="text"
-                name="apellido_empleado"
-                required />
-            </div>
-          </div>
-
-          <div class="row mt-2">
-            <div class="col-md-6">
-              <label for="sexo_empleado" class="form-label">
-                Sexo del empleado
-              </label>
-              <select
-                class="form-select"
-                name="sexo_empleado"
-                aria-label="Default select example">
-                <option selected>Seleccione</option>
-                <option value="1">Masculino</option>
-                <option value="2">Femenino</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label for="telefono_empleado" class="form-label">
-                Telefono del empleado
-              </label>
-              <input
-                class="form-control"
-                type="text"
-                name="telefono_empleado"
+                name="apellido_cliente"
                 required />
             </div>
           </div>
 
           <div class="row mt-2">
             <div class="col-md-6">
-              <label for="email_empleado" class="form-label">
-                Email del empleado
+              <label for="nif_cliente" class="form-label">
+                NIF
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="nif_cliente"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="telefono_cliente" class="form-label">
+                Telefono
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="telefono_cliente"
+                required />
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="email_cliente" class="form-label">
+                Email
               </label>
               <input
                 class="form-control"
                 type="email"
-                name="email_empleado"
+                name="email_cliente"
                 required />
             </div>
             <div class="col-md-6">
-              <label for="profesion_empleado" class="form-label">
-                Profesión del empleado
+              <label for="provincia_cliente" class="form-label">
+                Provincia 
               </label>
               <input
                 class="form-control"
                 type="text"
-                name="profesion_empleado"
+                name="provincia_cliente"
                 required />
             </div>
           </div>
 
           <div class="row mt-2">
             <div class="col-md-6">
-              <label for="salario_empleado" class="form-label">
-                Salario del empleado
+              <label for="poblacion_cliente" class="form-label">
+                Población
               </label>
               <input
                 class="form-control"
                 type="text"
-                name="salario_empleado"
-                id="salario_empleado"
+                name="poblacion_cliente"
                 required />
             </div>
             <div class="col-md-6">
-              <label for="" class="form-label">
-                CARGAR IMAGEN DEL EMPLEADO
+            <label for="direccion_cliente" class="form-label">
+                Dirección
               </label>
-              <div class="avatar-upload">
-                <div class="avatar-edit">
-                  <input
-                    type="file"
-                    name="foto_empleado"
-                    id="imageUpload"
-                    accept=".png, .jpg, .jpeg" />
-                  <label for="imageUpload"><i class="bi bi-pen"></i></label>
-                </div>
-                <div class="avatar-preview">
-                  <div class="avatar-preview">
-                    {% set url_avatar= url_for('static', filename
-                    ='assets/img/avatar.png') %}
-                    <div
-                      id="imagePreview"
-                      style="background-image: url('{{ url_avatar }}')"></div>
-                  </div>
-                </div>
-              </div>
+              <input
+                class="form-control"
+                type="text"
+                name="direccion_cliente"
+                required />
+          </div>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="cp_cliente" class="form-label">
+                Código Postal
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="cp_cliente"
+                required />
             </div>
           </div>
 

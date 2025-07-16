@@ -1,0 +1,187 @@
+{% extends 'public/base_cpanel.html' %}
+<!--Cambiando el title-->
+{% block title %}Crud con Python 🐍 | Registrar Nuevo Empleado{% endblock %}
+<!---->
+{% block customCSS %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename ='assets/css/file.css') }}" />
+{% endblock %}
+
+<!--Inicio del block-->
+{% block body %}
+<div class="card" style="border-radius: 0px !important">
+  {% if respuestaCliente|length %}
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center mt-5 mb-3">
+        <a href="/lista-de-empleados">
+          <i class="bi bi-arrow-left-circle"></i>
+        </a>
+        ACTUALIZAR DATOS DEL CLIENTE
+      </h3>
+      <hr />
+    </div>
+  </div>
+
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-10">
+      <form
+        class="form-horizontal mx-auto"
+        method="POST"
+        action="{{ url_for('actualizarCliente', id = respuestaCliente.id_Clientes ) }}"
+        autocomplete="off"
+        enctype="multipart/form-data">
+        <input
+          type="text"
+          class="form-control"
+          name="id_Clientes"
+          value="{{ respuestaCliente.id_Clientes }}"
+          required
+          hidden />
+
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="nombre_cliente" class="form-label">
+                Nombre
+              </label>
+              <input
+                type="text"
+                name="nombre_cliente"
+                value="{{ respuestaCliente.nombre }}"
+                class="form-control"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="apellido_cliente" class="form-label">
+                Apellido
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="apellido_cliente"
+                value="{{ respuestaCliente.apellido }}"
+                required />
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="nif_cliente" class="form-label">
+                NIF
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="nif_cliente"
+                value="{{ respuestaCliente.nif }}"
+                required />
+            </div>
+
+            <div class="col-md-6">
+              <label for="telefono_cliente" class="form-label">
+                Telefono
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="telefono_cliente"
+                value="{{ respuestaCliente.telefono }}"
+                required />
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="email_cliente" class="form-label">
+                Email
+              </label>
+              <input
+                class="form-control"
+                type="email"
+                name="email_cliente"
+                value="{{ respuestaCliente.email }}"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="provincia_cliente" class="form-label">
+                Provincia
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="provincia_cliente"
+                value="{{ respuestaCliente.provincia }}"
+                required />
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="poblacion_cliente" class="form-label">
+                Población
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="poblacion_cliente"
+                value="{{ respuestaCliente.poblacion }}"
+                required />
+            </div>
+            <div class="col-md-6">
+                <label for="direccion_cliente" class="form-label">
+                  Dirección
+                </label>
+                <input
+                  class="form-control"
+                  type="text"
+                  name="direccion_cliente"
+                  value="{{ respuestaCliente.direccion }}"
+                required />
+            </div>
+          </div>
+
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <label for="cp_cliente" class="form-label">
+                Código Postal
+              </label>
+              <input
+                class="form-control"
+                type="text"
+                name="cp_cliente"
+                value="{{ respuestaCliente.codigo_postal }}"
+                required />
+            </div>
+            <div class="col-md-6">
+              <label for="fecha_cliente" class="form-label">
+                Fecha de Registro
+              </label>
+              <br />
+              {{ respuestaCliente.fecha_registro}}
+            </div>
+          </div>
+
+          <div class="mb-3 mt-4 text-center">
+            <button type="submit" class="btn rounded-pill btn-primary">
+              Guardar registro ahora
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <h3 class="text-center">No existe el cliente</h3>
+    </div>
+  </div>
+
+  {% endif %}
+</div>
+{% endblock %} {% block customJS %}
+<script src="{{ url_for('static', filename ='assets/customJS/file.js') }}"></script>
+{% endblock %}

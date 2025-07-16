@@ -1,0 +1,50 @@
+{% for empleado in dataBusqueda %}
+{% set num_equipos = empleado.equipos|length %}
+  {% if num_equipos > 0 %}
+    {% for equipo in empleado.equipos %}
+      <tr>
+        {% if loop.first %}
+          <td width="10px" rowspan="{{ num_equipos }}">
+            <a href="/detalles-empleado/{{ empleado.id_Clientes }}" title="Ver detalles" class="btn btn-info btn-sm">
+              <i class="bi bi-eye"></i>
+            </a>
+          </td>
+          <td rowspan="{{ num_equipos }}">{{ empleado.nombre }}</td>
+          <td rowspan="{{ num_equipos }}">{{ empleado.apellido }}</td>
+          <td rowspan="{{ num_equipos }}">{{ empleado.poblacion }}</td>
+        {% endif %}
+        <td>{{ equipo.marca }}</td>
+        <td>{{ equipo.garantia }}</td>
+        <td>{{ equipo.fecha_compra }}</td>
+        <td>
+          {% if equipo.servicios %}
+            <ul class="mb-0 ps-3">
+              {% for servicio in equipo.servicios %}
+                <li>
+                  {{ servicio.tipo_servicio }} - {{ servicio.fecha_servicio }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <span class="text-muted small">Sin servicios</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  {% else %}
+    <tr>
+      <td width="10px">
+        <a href="/detalles-empleado/{{ empleado.id_Clientes }}" title="Ver detalles" class="btn btn-info btn-sm">
+          <i class="bi bi-eye"></i>
+        </a>
+      </td>
+      <td>{{ empleado.nombre }}</td>
+      <td>{{ empleado.apellido }}</td>
+      <td>{{ empleado.poblacion }}</td>
+      <td><span class="text-muted small">Sin equipo</span></td>
+      <td><span class="text-muted small">Sin equipo</span></td>
+      <td><span class="text-muted small">Sin equipo</span></td>
+      <td><span class="text-muted small">Sin equipo</span></td>
+    </tr>
+  {% endif %}
+{% endfor %}

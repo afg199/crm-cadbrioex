@@ -1,0 +1,234 @@
+{% extends 'public/base_cpanel.html' %}
+
+{% block title %}Crud con Python 🐍 | Lista de Empleados{% endblock %}
+
+{% block filtroCSS %}
+<!-- ✅ CSS de Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block body %}
+<div class="card" style="border-radius: 0px !important">
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12 mb-4">
+      <h3 class="text-center mt-5 mb-3">BUSQUEDA AVANZADA</h3>
+      <hr />
+    </div>
+    
+    <!-- ✅ Select con filtro de nombre usando Select2 -->
+    <div class="row justify-content-center mb-2">
+      <div class="col-md-10">
+        <form>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="nombre_filtro" class="form-label">Nombre</label>
+                <select class="form-select" name="nombre_filtro" id="nombre_filtro" style="width: 100%;">
+                  <option value="">Seleccione un nombre...</option>
+                  {% for flnomb in filtro_nombres %}
+                    <option value="{{ flnomb }}">{{ flnomb }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="apellido_filtro" class="form-label">Apellido</label>
+                <select class="form-select" name="apellido_filtro" id="apellido_filtro" style="width: 100%;">
+                  <option value="">Seleccione un apellido...</option>
+                  {% for flapell in filtro_apellidos %}
+                    <option value="{{ flapell }}">{{ flapell }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="poblacion_filtro" class="form-label">Población</label>
+                <select class="form-select" name="poblacion_filtro" id="poblacion_filtro" style="width: 100%;">
+                  <option value="">Seleccione una población...</option>
+                  {% for flpob in filtro_poblaciones %}
+                    <option value="{{ flpob }}">{{ flpob }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            
+            <div class="row mt-4">
+              <div class="col-md-4">
+                <label for="marca_filtro" class="form-label">Marca</label>
+                <select class="form-select" name="marca_filtro" id="marca_filtro" style="width: 100%;">
+                  <option value="">Seleccione un marca...</option>
+                  {% for flmar in filtro_marca %}
+                    <option value="{{ flmar }}">{{ flmar }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="garantia_filtro" class="form-label">Garantía</label>
+                <select class="form-select" name="garantia_filtro" id="garantia_filtro" style="width: 100%;">
+                  <option value="">Seleccione una opción...</option>
+                  {% for flgar in filtro_garantia %}
+                    <option value="{{ flgar }}">{{ flgar }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="anio_filtro" class="form-label">Año de compra</label>
+                <select class="form-select" name="anio_filtro" id="anio_filtro" style="width: 100%;">
+                  <option value="">Seleccione un año...</option>
+                  {% for flanio in filtro_anios %}
+                    <option value="{{ flanio }}">{{ flanio }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+             <div class="row mt-4">
+              <div class="col-md-4">
+                <label for="servicio_filtro" class="form-label">Servicio</label>
+                <select class="form-select" name="servicio_filtro" id="servicio_filtro" style="width: 100%;">
+                  <option value="">Seleccione un servicio...</option>
+                  {% for flserv in filtro_servicio %}
+                    <option value="{{ flserv }}">{{ flserv }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="anioserv_filtro" class="form-label">Año de Servicio</label>
+                <select class="form-select" name="anioserv_filtro" id="anioserv_filtro" style="width: 100%;">
+                  <option value="">Seleccione el año...</option>
+                  {% for flanioserv in filtro_anio_servicio %}
+                    <option value="{{ flanioserv }}">{{ flanioserv }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="messerv_filtro" class="form-label">Mes de Servicio</label>
+                <select class="form-select" name="messerv_filtro" id="messerv_filtro" style="width: 100%;">
+                  <option value="">Seleccione un mes...</option>
+                  {% for flmesserv in fitro_mes_servicio %}
+                    <option value="{{ flmesserv }}">{{ flmesserv }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ✅ Tabla de resultados -->
+    <div class="row justify-content-center mb-2">
+      <div class="table-responsive text-nowrap table-hover">
+        <table
+          id="clientes"
+          class="table table-striped table-bordered"
+          cellspacing="0"
+          width="100%">
+          <thead>
+            <tr>
+              <th rowspan="2"></th>
+              <th colspan="3" class="text-center">CLIENTE</th>
+              <th colspan="3" class="text-center">EQUIPO</th>
+              <th rowspan="2" class="text-center">SERVICIOS</th>
+            </tr>
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Población</th>
+              <th>Marca</th>
+              <th>Garantía</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for empleado in empleados %}
+              {% set num_equipos = empleado.equipos|length %}
+              {% if num_equipos > 0 %}
+                {% for equipo in empleado.equipos %}
+                  <tr>
+                    {% if loop.first %}
+                      <td width="10px" rowspan="{{ num_equipos }}">
+                        <a href="/detalles-empleado/{{ empleado.id_Clientes }}" title="Ver detalles" class="btn btn-info btn-sm">
+                          <i class="bi bi-eye"></i>
+                        </a>
+                      </td>
+                      <td rowspan="{{ num_equipos }}">{{ empleado.nombre }}</td>
+                      <td rowspan="{{ num_equipos }}">{{ empleado.apellido }}</td>
+                      <td rowspan="{{ num_equipos }}">{{ empleado.poblacion }}</td>
+                    {% endif %}
+                    <td>{{ equipo.marca }}</td>
+                    <td>{{ equipo.garantia }}</td>
+                    <td>{{ equipo.fecha_compra }}</td>
+                    <td>
+                      {% if equipo.servicios %}
+                        <ul class="mb-0 ps-3">
+                          {% for servicio in equipo.servicios %}
+                            <li>
+                              {{ servicio.tipo_servicio }} - {{ servicio.fecha_servicio }}
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      {% else %}
+                        <span class="text-muted small">Sin servicios</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td width="10px">
+                    <a href="/detalles-empleado/{{ empleado.id_Clientes }}" title="Ver detalles" class="btn btn-info btn-sm">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                  </td>
+                  <td>{{ empleado.nombre }}</td>
+                  <td>{{ empleado.apellido }}</td>
+                  <td>{{ empleado.poblacion }}</td>
+                  <td><span class="text-muted small">Sin equipo</span></td>
+                  <td><span class="text-muted small">Sin equipo</span></td>
+                  <td><span class="text-muted small">Sin equipo</span></td>
+                  <td><span class="text-muted small">Sin equipo</span></td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block filtroJS %}
+<!-- ✅ JS de jQuery y Select2 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function() {
+  $('#nombre_filtro').select2({ placeholder: "Escribe un nombre...", allowClear: true, width: 'resolve' });
+  $('#apellido_filtro').select2({ placeholder: "Escribe un apellido...", allowClear: true, width: 'resolve' });
+  $('#poblacion_filtro').select2({ placeholder: "Escribe una población...", allowClear: true, width: 'resolve' });
+  $('#marca_filtro').select2({ placeholder: "Escribe una marca...", allowClear: true, width: 'resolve' });
+  $('#garantia_filtro').select2({ placeholder: "Selecciona una opción...", allowClear: true, width: 'resolve' });
+  $('#anio_filtro').select2({ placeholder: "Selecciona un año...", allowClear: true, width: 'resolve' });
+  $('#servicio_filtro').select2({ placeholder: "Selecciona un servicio...", allowClear: true, width: 'resolve' });
+  $('#anioserv_filtro').select2({ placeholder: "Selecciona el año...", allowClear: true, width: 'resolve' });
+  $('#messerv_filtro').select2({ placeholder: "Selecciona un mes...", allowClear: true, width: 'resolve' });
+
+  $('#nombre_filtro, #apellido_filtro, #poblacion_filtro, #marca_filtro, #garantia_filtro, #anio_filtro, #servicio_filtro, #anioserv_filtro, #messerv_filtro').on('change', function() {
+    // Recoge los valores seleccionados
+    const nombre = $('#nombre_filtro').val();
+    const apellido = $('#apellido_filtro').val();
+    const poblacion = $('#poblacion_filtro').val();
+    const marca = $('#marca_filtro').val();
+    const garantia = $('#garantia_filtro').val();
+    const anio = $('#anio_filtro').val();
+    const servicio = $('#servicio_filtro').val();
+    const anioserv = $('#anioserv_filtro').val();
+    const messerv = $('#messerv_filtro').val();
+
+    // Llama a la función de búsqueda avanzada y pásale los filtros
+    buscadorAvanzadoTable('clientes', nombre, apellido, poblacion, marca, garantia, anio, servicio, anioserv, messerv);
+  });
+});
+</script>
+{% endblock %}
+
+

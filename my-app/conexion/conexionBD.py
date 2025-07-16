@@ -10,8 +10,8 @@ def connectionBD():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            passwd="",
-            database="crud_python",
+            passwd="Calamonte.1994",
+            database="bd_cadbioex",
             charset='utf8mb4',
             collation='utf8mb4_unicode_ci',
             raise_on_warnings=True
